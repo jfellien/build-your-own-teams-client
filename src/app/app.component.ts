@@ -4,12 +4,18 @@ import { AuthenticationResult, InteractionStatus, PopupRequest, RedirectRequest,
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 
+type AccountType = {
+  name?: string,
+};
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit, OnDestroy {
+  account: AccountType | undefined;
+  
   title = 'Build Your Own Teams Client';
   isIframe = false;
   loginDisplay = false;
@@ -18,10 +24,9 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
     private authService: MsalService,
-    private msalBroadcastService: MsalBroadcastService
-  ) {
-    
-  }
+    private msalBroadcastService: MsalBroadcastService) 
+    {
+    }
 
   ngOnInit(): void {
     this.isIframe = window !== window.parent && !window.opener; // Remove this line to use Angular Universal
@@ -74,11 +79,18 @@ export class AppComponent implements OnInit, OnDestroy {
       this.authService.loginPopup({...this.msalGuardConfig.authRequest} as PopupRequest)
         .subscribe((response: AuthenticationResult) => {
           this.authService.instance.setActiveAccount(response.account);
+
+          this.account = {}; // Initialize account object
+          this.account.name = response.account.name;
+
         });
       } else {
         this.authService.loginPopup()
           .subscribe((response: AuthenticationResult) => {
             this.authService.instance.setActiveAccount(response.account);
+
+            this.account = {}; // Initialize account object
+            this.account.name = response.account.name;
       });
     }
   }

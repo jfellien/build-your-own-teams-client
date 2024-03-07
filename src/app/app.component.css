@@ -5,3 +5,8 @@
   a.title {
     color: white;
   }
+
+  .account-name {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
